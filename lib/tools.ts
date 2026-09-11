@@ -1,5 +1,5 @@
 import { getRoomStatus, getCheckoutTime, orderRoomService } from "./mockPMS";
-
+import { searchFaq } from "./faqSearch";
 export const toolDefinitions = [
   {
     type: "function" as const,
@@ -42,14 +42,41 @@ export const toolDefinitions = [
   },
 ];
 
-export async function executeTool(name: string, args: Record<string, any>) {
+export async function executeTool(name: string, args: Record<string, unknown>) {
   switch (name) {
-    case "getRoomStatus":
-      return getRoomStatus(args.roomNumber);
-    case "getCheckoutTime":
-      return getCheckoutTime(args.roomNumber);
-    case "orderRoomService":
-      return orderRoomService(args.roomNumber, args.item);
+    case "getRoomStatus": {
+      const roomNumber = Number(args.roomNumber);
+      if (Number.isNaN(roomNumber)) {
+        return { error: "roomNumber fehlt oder ist ungültig" };
+      }
+      return getRoomStatus(roomNumber);
+    }
+
+    case "getCheckoutTime": {
+      const roomNumber = Number(args.roomNumber);
+      if (Number.isNaN(roomNumber)) {
+        return { error: "roomNumber fehlt oder ist ungültig" };
+      }
+      return getCheckoutTime(roomNumber);
+    }
+
+    case "orderRoomService": {
+      const roomNumber = Number(args.roomNumber);
+      const item = typeof args.item === "string" ? args.item : undefined;
+      if (Number.isNaN(roomNumber) || !item) {
+        return { error: "roomNumber oder item fehlt bzw. ist ungültig" };
+      }
+      return orderRoomService(roomNumber, item);
+    }
+
+    case "searchHotelInfo": {
+      const query = typeof args.query === "string" ? args.query : undefined;
+      if (!query) {
+        return { error: "query fehlt oder ist ungültig" };
+      }
+      return { answer: await searchFaq(query) };
+    }
+
     default:
       return { error: `Unbekanntes Tool: ${name}` };
   }
