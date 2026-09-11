@@ -1,40 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# hotel-voice-assistant-demo
 
-## Getting Started
+Ein funktionierender Prototyp, der zeigt, wie ein LLM per Function Calling
+mit einem Backend-System (hier: einem Hotel-Verwaltungssystem) verbunden
+werden kann, um einem Sprachassistenten Zugriff auf Live-Daten zu geben,
+ohne selbst zu halluzinieren.
 
-First, run the development server:
+**Kernidee:** Ein Gast stellt eine natürlichsprachliche Frage → ein LLM
+erkennt die Absicht → das LLM ruft eine definierte Funktion auf, die echte
+Daten liefert → das LLM formuliert daraus eine natürliche Antwort.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Die Sprachfrage wird hier per Texteingabe simuliert (statt über einen
+echten Voice-Skill wie Alexa oder Google Assistant), damit sich der
+komplette Backend-Flow ohne Skill-Zertifizierung testen lässt. Die
+Architektur ist 1:1 auf einen echten Voice-Client übertragbar.
+
+## Warum dieses Projekt?
+
+Sprachassistenten in Kombination mit LLMs sind ein wachsendes Feld,
+gerade in der Hotellerie (Concierge-Anfragen, Zimmerservice, Check-out-
+Infos). Das Kernproblem dabei: Ein LLM kennt keine aktuellen Live-Daten
+und darf sie auch nicht raten. Dieses Projekt zeigt, wie man das sauber
+löst — mit Function Calling statt Prompt-Halluzination.
+
+## Architektur
+```
+Gast-Frage (Text hier, Voice in echt)
+│
+▼
+Next.js Frontend
+│ POST /api/chat
+▼
+Next.js API Route
+│
+▼
+LLM-Aufruf (Groq, LLaMA 3.3 70B) mit definierten Tools
+│
+├── Fall A: Direkte Text-Antwort (z.B. Small Talk)
+│
+└── Fall B: LLM fordert Tool-Call an
+│
+▼
+Tool-Dispatcher (lib/tools.ts)
+│
+▼
+Backend-Datenquelle (lib/mockPMS.ts)
+[in Produktion: HTTP-Call an ein echtes Hotel-Management-System]
+│
+▼
+Ergebnis zurück ans LLM
+│
+▼
+LLM formuliert finale, natürliche Antwort
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Zentrale Design-Entscheidung: Function Calling statt freier Textgenerierung
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Ein LLM darf bei faktenkritischen Anfragen (Zimmerstatus, Check-out-Zeit,
+Bestellungen) niemals selbst antworten, ohne echte Daten abgerufen zu
+haben — das Risiko von Halluzinationen wäre in einem echten Hotelbetrieb
+inakzeptabel. Deshalb:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+- Das LLM bekommt nur **Werkzeuge** (Tool-Definitionen), keine Rohdaten
+- Es **entscheidet selbst**, ob und welches Tool es für eine Anfrage braucht
+- Der eigentliche Datenzugriff läuft **immer im eigenen Code**, nie im Modell
+- `temperature` wird bewusst niedrig gehalten (0.3), um konsistente,
+  sachliche Antworten statt kreativer Ausschmückungen zu erzwingen
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setup
 
-## Learn More
+```bash
+pnpm install
+cp .env.example .env.local
+# echten Groq API Key eintragen - kostenlos auf https://console.groq.com
+pnpm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Dann `http://localhost:3000` öffnen.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+## Beispiel-Interaktionen
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Eingabe | Was passiert |
+|---|---|
+| "Ist Zimmer 204 schon geputzt?" | Tool `getRoomStatus` wird aufgerufen |
+| "Wann ist Check-out für Zimmer 101?" | Tool `getCheckoutTime` wird aufgerufen |
+| "Bitte ein Club Sandwich auf Zimmer 204 bestellen" | Tool `orderRoomService` wird aufgerufen |
+| "Ist Zimmer 999 verfügbar?" | Testet Fehlerbehandlung bei unbekannter Ressource |
+| "Wie geht's dir?" | Direkte Antwort ohne Tool-Aufruf (Small Talk) |
 
-## Deploy on Vercel
+## Projektstruktur
+```
+├── lib/
+│ ├── mockPMS.ts # Simulierte Backend-Datenquelle (Hotelzimmer, Bestellungen)
+│ └── tools.ts # Tool-Definitionen + Dispatcher für Function Calling
+├── pages/
+│ ├── api/chat.ts # Orchestriert LLM-Aufruf + Tool-Ausführung
+│ └── index.tsx # Einfache Chat-UI zum Testen
+└── .env.example # Zeigt benötigte Umgebungsvariable
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Nächste Ausbaustufen
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+Bewusst nicht umgesetzt, um den Scope für einen Prototyp klein zu halten,
+aber als konkrete nächste Schritte durchdacht:
+
+- **RAG (Retrieval Augmented Generation)** für offene Fragen wie
+  "Welche Restaurants gibt's in der Nähe?" — Hotel-FAQs und lokale Infos
+  in einem Vector Store ablegen, per Embedding-Suche relevante Snippets
+  in den Prompt einspeisen
+- **MCP (Model Context Protocol)** als standardisierte Alternative zu
+  eigenen Tool-Definitionen, um das LLM mit mehreren Backend-Systemen zu
+  verbinden, ohne für jedes System eigene Schnittstellen zu schreiben
+- **Echte Autorisierung** — prüfen, ob der anfragende Gast überhaupt
+  Zugriff auf die angefragte Zimmernummer hat, bevor ein Tool ausgeführt wird
+- **Anbindung an ein echtes Backend-System** statt der Mock-Datenschicht
+  in `lib/mockPMS.ts`
+- **Echte Voice-Integration** über einen Alexa- oder Google-Assistant-Skill
+
+## Tech Stack
+
+Next.js · React · TypeScript · Groq SDK (LLaMA 3.3 70B) · Function Calling
