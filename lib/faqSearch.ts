@@ -9,11 +9,18 @@ import { Mistral } from "@mistralai/mistralai";
 const mistral = new Mistral({ apiKey: process.env.MISTRAL_API_KEY });
 
 const hotelFaqs = [
-  "Das Restaurant Alpenblick liegt 200m vom Hotel entfernt und bietet bayerische Küche.",
-  "Ruhezeiten im Hotel sind von 22:00 bis 7:00 Uhr.",
-  "Der nächste Supermarkt hat täglich bis 22 Uhr geöffnet, 5 Gehminuten entfernt.",
-  "Der Frühstücksraum öffnet um 6:30 Uhr und schließt um 10:30 Uhr.",
-  "WLAN-Passwort für Gäste: siehe Karte auf dem Nachttisch.",
+  "Check-in ist ab 15:00 Uhr möglich, Check-out bis spätestens 11:00 Uhr. Ein späterer Check-out bis 14:00 Uhr kostet 25 € Aufpreis, nach Verfügbarkeit.",
+  "Ruhezeiten im Hotel Amara gelten von 22:00 Uhr bis 7:00 Uhr. Bitte auf Zimmernachbarn Rücksicht nehmen, besonders auf Fluren und Balkonen.",
+  "Das Frühstücksbuffet im Restaurant 'Bibliothek' wird täglich von 6:30 bis 10:30 Uhr serviert, am Wochenende bis 11:00 Uhr. Das Restaurant öffnet abends von 18:00 bis 22:30 Uhr.",
+  "Der Zimmerservice ist täglich von 7:00 bis 23:00 Uhr erreichbar, Bestellung telefonisch, per App oder digitalem Concierge. Lieferzeit 25 bis 35 Minuten.",
+  "Kostenfreies WLAN ist in allen Zimmern und öffentlichen Bereichen verfügbar. Netzwerkname und Passwort stehen auf der Gästekarte am Nachttisch.",
+  "Haustiere sind nach Anmeldung willkommen, Gebühr 15 € pro Nacht. In Restaurants und Wellnessbereich sind Haustiere aus Rücksicht auf Allergiker nicht gestattet.",
+  "Das Hotel Amara ist ein Nichtraucherhotel. Rauchen ist nur auf der Terrasse im Erdgeschoss und der Raucherecke im Parkdeck erlaubt. Rauchen im Zimmer kostet 150 € Reinigungspauschale.",
+  "Die Tiefgarage kostet 18 € pro Nacht, Einfahrt in der Seitenstraße rechts vom Haupteingang. Valet-Parking ist für 8 € Aufpreis zusätzlich buchbar.",
+  "Sauna, Dampfbad und Fitnessraum sind täglich von 6:00 bis 22:00 Uhr kostenfrei für Hotelgäste zugänglich. Kinder unter 16 nur in Begleitung Erwachsener im Saunabereich.",
+  "Akzeptierte Zahlungsmittel sind Visa, Mastercard, American Express, EC-Karte und Bargeld. Bei Anreise wird eine Kaution in Höhe einer Übernachtung auf der Kreditkarte hinterlegt.",
+  "Kostenfreie Stornierung ist bis 18:00 Uhr am Anreisetag möglich. Bei späterer Stornierung oder Nichterscheinen wird die erste Nacht komplett berechnet.",
+  "Fluchtwegpläne befinden sich an jeder Zimmertür, Sammelplatz ist der Vorplatz an der Hotel-Auffahrt. Die Rezeption ist rund um die Uhr über die interne Durchwahl 0 erreichbar.",
 ];
 
 // Cache: einmal berechnete Embeddings nicht bei jedem Request neu holen

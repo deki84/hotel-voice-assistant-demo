@@ -4,7 +4,7 @@ import { toolDefinitions, executeTool } from "../../lib/tools";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-const SYSTEM_PROMPT = `Du bist der Voice-Assistent eines Hotels (RoomGrid-Demo).
+const SYSTEM_PROMPT = `Du bist der Voice-Assistent eines Hotels (Amara).
 Antworte immer kurz, freundlich und auf Deutsch - wie ein Concierge, nicht wie ein Chatbot.
 WICHTIG: Antworte in MAXIMAL 1-2 kurzen Sätzen. Keine langen Erklärungen oder Aufzählungen.
 Nutze IMMER die verfügbaren Tools, wenn es um konkrete Zimmerdaten, Check-out-Zeiten
