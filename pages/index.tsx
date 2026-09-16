@@ -73,31 +73,23 @@ export default function Home() {
     <main style={styles.scene}>
       <div style={styles.vignette} />
 
-            <div style={styles.stage}>
-        <img src="/concierge.png" alt="Hotel-Concierge" style={styles.character} />
+    {loading && (
+  <div style={styles.assistantBubbleWrap}>
+    <div style={{ ...styles.assistantBubble, display: "flex", gap: 5, alignItems: "center" }}>
+      <span style={styles.dot} />
+      <span style={{ ...styles.dot, animationDelay: "0.2s" }} />
+      <span style={{ ...styles.dot, animationDelay: "0.4s" }} />
+    </div>
+   
+  </div>
+)}
 
-        {loading && (
-          <div style={styles.assistantBubbleWrap}>
-            <div style={{ ...styles.assistantBubble, display: "flex", gap: 5, alignItems: "center" }}>
-              <span style={styles.dot} />
-              <span style={{ ...styles.dot, animationDelay: "0.2s" }} />
-              <span style={{ ...styles.dot, animationDelay: "0.4s" }} />
-            </div>
-            <svg width="50" height="36" style={styles.assistantTail} aria-hidden="true">
-              <polygon points="4,0 40,0 -6,36" fill="rgba(255,255,255,0.96)" />
-            </svg>
-          </div>
-        )}
-
-        {lastAssistant && !loading && (
-          <div style={styles.assistantBubbleWrap}>
-            <div style={styles.assistantBubble}>{lastAssistant.content}</div>
-            <svg width="50" height="36" style={styles.assistantTail} aria-hidden="true">
-              <polygon points="4,0 40,0 -6,36" fill="rgba(255,255,255,0.96)" />
-            </svg>
-          </div>
-        )}
-      </div>
+{lastAssistant && !loading && (
+  <div style={styles.assistantBubbleWrap}>
+    <div style={styles.assistantBubble}>{lastAssistant.content}</div>
+ 
+  </div>
+)}
 
   
 
@@ -145,7 +137,7 @@ const styles: Record<string, React.CSSProperties> = {
     position: "relative",
     minHeight: "100vh",
     width: "100%",
-    backgroundImage: "url(/hotel-lobby.jpeg)",
+    backgroundImage: "url(/concierge.png)",
     backgroundSize: "cover",
     backgroundPosition: "center",
     display: "flex",
@@ -156,10 +148,10 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "system-ui, sans-serif",
     paddingBottom: "2rem",
   },
-  stage: {
+stage: {
   position: "relative",
   width: "min(90vw, 480px)",
-  height: "min(72vh, 620px)",
+  aspectRatio: "800 / 1200", // ← ersetz mit DEINEN echten Bildmaßen
   marginBottom: "1.5rem",
 },
   vignette: {
@@ -185,30 +177,32 @@ const styles: Record<string, React.CSSProperties> = {
   },
 assistantBubbleWrap: {
   position: "absolute",
-  top: "18%",
+  top: "22vh",
   left: "58%",
-  width: "min(340px, 78vw)",
+  width: "min(300px, 66vw)",
   zIndex: 3,
   transform: "translateY(-100%)",
 },
 assistantBubble: {
-  background: "rgba(255,255,255,0.97)",
+  background: "rgba(255,255,255,0.98)",
   color: "#26215C",
-  padding: "14px 18px",
-  borderRadius: 22,
-  fontSize: 14,
-  lineHeight: 1.4,
-  boxShadow: "0 14px 40px rgba(0,0,0,0.4)",
-  maxHeight: "35vh",
+  padding: "16px 20px",
+  borderRadius: 24,
+  fontSize: 14.5,
+  lineHeight: 1.5,
+  boxShadow: "0 16px 44px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.15)",
+  border: "1px solid rgba(255,255,255,0.6)",
+  maxHeight: "32vh",
   overflowY: "auto",
 },
 assistantTail: {
   position: "absolute",
-  bottom: -20,
-  left: 24,
+  bottom: -16,
+  left: 22,
   display: "block",
+  filter: "drop-shadow(0 3px 3px rgba(0,0,0,0.2))",
 },
-  userBubbleWrap: { position: "absolute", top: "18%", left: "5%", maxWidth: 240, zIndex: 3 },
+  userBubbleWrap: { position: "absolute", top: "58%", left: "5%", maxWidth: 240, zIndex: 3 },
   userBubble: {
     background: "#3C3489",
     color: "#EEEDFE",
