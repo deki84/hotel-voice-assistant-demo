@@ -33,7 +33,7 @@ Next.js Frontend
 Next.js API Route
 │
 ▼
-LLM-Aufruf (Groq, LLaMA 3.3 70B) mit definierten Tools
+LLM-Aufruf (Groq, openai/gpt-oss-120b) mit definierten Tools
 │
 ├── Fall A: Direkte Text-Antwort (z.B. Small Talk)
 │
@@ -119,4 +119,4 @@ aber als konkrete nächste Schritte durchdacht:
 
 ## Tech Stack
 
-Next.js · React · TypeScript · Groq SDK (LLaMA 3.3 70B) · Function Calling
+Next.js · React · TypeScript · Groq SDK (openai/gpt-oss-120b) · Function Calling
