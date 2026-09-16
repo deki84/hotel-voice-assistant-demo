@@ -1,7 +1,15 @@
 /**
- * RAG-basierte FAQ-Suche über In-Memory-Embeddings.
- * Für den Demo-Umfang reicht ein einfaches Array statt eines
- * dedizierten Vector-Stores (Pinecone/Weaviate).
+ * Zwei Ansätze zur Beantwortung von Hotel-Infos:
+ *
+ * 1. getFullHouseRules() - gesamtes Dokument in den Prompt geben.
+ *    Sinnvoll bei kleinen Wissensbasen wie dieser Hausordnung.
+ *
+ * 2. searchFaq(query) - Embedding-basierte Vektorsuche, gibt nur
+ *    den relevantesten Treffer zurück. Wird nötig, sobald die
+ *    Wissensbasis zu groß wird, um komplett in den Prompt zu passen.
+ *
+ * Aktuell wird (1) verwendet (siehe tools.ts), (2) bleibt als
+ * Referenzimplementierung für größere Datenmengen erhalten.
  */
 
 import { Mistral } from "@mistralai/mistralai";
@@ -23,6 +31,9 @@ const hotelFaqs = [
   "Fluchtwegpläne befinden sich an jeder Zimmertür, Sammelplatz ist der Vorplatz an der Hotel-Auffahrt. Die Rezeption ist rund um die Uhr über die interne Durchwahl 0 erreichbar.",
 ];
 
+export function getFullHouseRules(): string {
+  return hotelFaqs.join(" ");
+}
 // Cache: einmal berechnete Embeddings nicht bei jedem Request neu holen
 let faqEmbeddings: { text: string; embedding: number[] }[] | null = null;
 

@@ -1,5 +1,5 @@
 import { getRoomStatus, getCheckoutTime, orderRoomService } from "./mockPMS";
-import { searchFaq } from "./faqSearch";
+import { getFullHouseRules } from "./faqSearch";
 export const toolDefinitions = [
   {
     type: "function" as const,
@@ -68,14 +68,9 @@ export async function executeTool(name: string, args: Record<string, unknown>) {
       }
       return orderRoomService(roomNumber, item);
     }
-
-    case "searchHotelInfo": {
-      const query = typeof args.query === "string" ? args.query : undefined;
-      if (!query) {
-        return { error: "query fehlt oder ist ungültig" };
-      }
-      return { answer: await searchFaq(query) };
-    }
+case "searchHotelInfo": {
+  return { info: getFullHouseRules() };
+}
 
     default:
       return { error: `Unbekanntes Tool: ${name}` };
