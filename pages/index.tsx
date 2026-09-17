@@ -70,32 +70,27 @@ export default function Home() {
   }
 
   return (
-    <main style={styles.scene}>
-      <div style={styles.imageStage}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/concierge.png" alt="Hotel-Concierge" style={styles.characterImg} />
-        <div style={styles.vignette} />
 
-        {loading && (
-          <div style={styles.assistantBubbleWrap}>
-            <div style={{ ...styles.assistantBubble, display: "flex", gap: 5, alignItems: "center" }}>
-              <span style={styles.dot} />
-              <span style={{ ...styles.dot, animationDelay: "0.2s" }} />
-              <span style={{ ...styles.dot, animationDelay: "0.4s" }} />
-            </div>
-           
-          </div>
-        )}
+  <main style={styles.scene}>
+    <div style={styles.vignette} />
 
-        {lastAssistant && !loading && (
-          <div style={styles.assistantBubbleWrap}>
-            <div style={styles.assistantBubble}>{lastAssistant.content}</div>
-            
-          </div>
-        )}
+    {loading && (
+      <div style={styles.assistantBubbleWrap}>
+        <div style={{ ...styles.assistantBubble, display: "flex", gap: 5, alignItems: "center" }}>
+          <span style={styles.dot} />
+          <span style={{ ...styles.dot, animationDelay: "0.2s" }} />
+          <span style={{ ...styles.dot, animationDelay: "0.4s" }} />
+        </div>
       </div>
+    )}
 
-      <div style={styles.examples}>
+    {lastAssistant && !loading && (
+      <div style={styles.assistantBubbleWrap}>
+        <div style={styles.assistantBubble}>{lastAssistant.content}</div>
+      </div>
+    )}
+
+    <div style={styles.examples}>
         {EXAMPLE_PROMPTS.map((prompt) => (
           <button key={prompt} style={styles.exampleBtn} onClick={() => sendMessage(prompt)} disabled={loading}>
             {prompt}
@@ -124,40 +119,55 @@ export default function Home() {
         </button>
       </form>
 
-      <style jsx global>{`
-        input::placeholder { color: rgba(255,255,255,0.6); }
-        @keyframes pulse { 0%, 80%, 100% { opacity: 0.3; } 40% { opacity: 1; } }
-      `}</style>
+     <style jsx global>{`
+  input::placeholder { color: rgba(255,255,255,0.6); }
+  @keyframes pulse { 0%, 80%, 100% { opacity: 0.3; } 40% { opacity: 1; } }
+
+
+  }
+`}</style>
     </main>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  scene: {
-    position: "relative",
-    minHeight: "100dvh",
-    width: "100%",
-    backgroundColor: "#0f0c16",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    fontFamily: "system-ui, sans-serif",
-    padding: "clamp(1rem, 3vh, 2rem) clamp(0.75rem, 3vw, 1.5rem)",
-    boxSizing: "border-box",
-    gap: "clamp(10px, 2vh, 16px)",
-  },
-  // Container hat EXAKT das Seitenverhältnis von concierge.png (1380 x 752).
-  // Dadurch wird das Bild nie zugeschnitten, und jede %-Position darin
-  // (Mund, Sprechblase) bleibt auf jedem Gerät identisch.
-  imageStage: {
-    position: "relative",
-    width: "min(94vw, 900px)",
-    aspectRatio: "1380 / 752",
-    borderRadius: 16,
-    overflow: "hidden",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
-  },
+scene: {
+  position: "relative",
+  minHeight: "100dvh",
+  width: "100%",
+  backgroundColor: "#0f0c16",
+  backgroundImage: "url(/concierge.png)",
+  backgroundSize: "cover",
+  backgroundPosition: "center 20%",
+  backgroundRepeat: "no-repeat",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-end",
+  alignItems: "center",
+  overflow: "hidden",
+  fontFamily: "system-ui, sans-serif",
+  padding: "clamp(1rem, 3vh, 2rem) clamp(0.75rem, 3vw, 1.5rem)",
+  boxSizing: "border-box",
+},
+assistantBubbleWrap: {
+  position: "absolute",
+  top: "clamp(10vh, 15vh, 18vh)",
+  left: "56%",
+  width: "clamp(140px, 30vw, 280px)",
+  zIndex: 3,
+},
+assistantBubble: {
+  background: "rgba(255,255,255,0.98)",
+  color: "#26215C",
+  padding: "clamp(8px, 1.6vw, 14px) clamp(10px, 2vw, 16px)",
+  borderRadius: 16,
+  fontSize: "clamp(10px, 1.4vw, 13px)",
+  lineHeight: 1.45,
+  boxShadow: "0 14px 36px rgba(0,0,0,0.4)",
+  maxHeight: "24vh",
+  overflowY: "auto",
+},
+ 
   characterImg: {
     position: "absolute",
     inset: 0,
@@ -174,27 +184,8 @@ const styles: Record<string, React.CSSProperties> = {
     zIndex: 1,
     pointerEvents: "none",
   },
-  // Mund liegt bei x=51.3%, y=22.1% im Originalbild (ausgemessen).
-  // Blase wird knapp rechts vom Mund verankert, wächst nach oben-rechts weg.
-  assistantBubbleWrap: {
-    position: "absolute",
-    left: "54%",
-    top: "20%",
-    width: "clamp(90px, 34%, 220px)",
-    zIndex: 3,
-    transform: "translateY(-100%)",
-  },
-  assistantBubble: {
-    background: "rgba(255,255,255,0.98)",
-    color: "#26215C",
-    padding: "clamp(6px, 1.6vw, 12px) clamp(8px, 2vw, 14px)",
-    borderRadius: 14,
-    fontSize: "clamp(8px, 1.4vw, 12px)",
-    lineHeight: 1.4,
-    boxShadow: "0 10px 24px rgba(0,0,0,0.35)",
-    maxHeight: "22vh",
-    overflowY: "auto",
-  },
+ 
+
   assistantTail: {
     position: "absolute",
     bottom: "-1.4vw",
