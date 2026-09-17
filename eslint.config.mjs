@@ -13,6 +13,14 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Config-Dateien (Jest, PostCSS etc.) dürfen weiterhin require() nutzen,
+  // da sie direkt von Node geladen werden, bevor irgendein Bundler läuft.
+  {
+    files: ["*.config.js", "*.config.cjs"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;
