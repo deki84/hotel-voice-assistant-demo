@@ -71,29 +71,29 @@ export default function Home() {
 
   return (
     <main style={styles.scene}>
-      <div style={styles.vignette} />
+      <div style={styles.imageStage}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/concierge.png" alt="Hotel-Concierge" style={styles.characterImg} />
+        <div style={styles.vignette} />
 
-    {loading && (
-  <div style={styles.assistantBubbleWrap}>
-    <div style={{ ...styles.assistantBubble, display: "flex", gap: 5, alignItems: "center" }}>
-      <span style={styles.dot} />
-      <span style={{ ...styles.dot, animationDelay: "0.2s" }} />
-      <span style={{ ...styles.dot, animationDelay: "0.4s" }} />
-    </div>
-   
-  </div>
-)}
+        {loading && (
+          <div style={styles.assistantBubbleWrap}>
+            <div style={{ ...styles.assistantBubble, display: "flex", gap: 5, alignItems: "center" }}>
+              <span style={styles.dot} />
+              <span style={{ ...styles.dot, animationDelay: "0.2s" }} />
+              <span style={{ ...styles.dot, animationDelay: "0.4s" }} />
+            </div>
+           
+          </div>
+        )}
 
-{lastAssistant && !loading && (
-  <div style={styles.assistantBubbleWrap}>
-    <div style={styles.assistantBubble}>{lastAssistant.content}</div>
- 
-  </div>
-)}
-
-  
-
-   
+        {lastAssistant && !loading && (
+          <div style={styles.assistantBubbleWrap}>
+            <div style={styles.assistantBubble}>{lastAssistant.content}</div>
+            
+          </div>
+        )}
+      </div>
 
       <div style={styles.examples}>
         {EXAMPLE_PROMPTS.map((prompt) => (
@@ -135,92 +135,75 @@ export default function Home() {
 const styles: Record<string, React.CSSProperties> = {
   scene: {
     position: "relative",
-    minHeight: "100vh",
+    minHeight: "100dvh",
     width: "100%",
-    backgroundImage: "url(/concierge.png)",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
+    backgroundColor: "#0f0c16",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "flex-end",
+    justifyContent: "center",
     alignItems: "center",
-    overflow: "hidden",
     fontFamily: "system-ui, sans-serif",
-    paddingBottom: "2rem",
+    padding: "clamp(1rem, 3vh, 2rem) clamp(0.75rem, 3vw, 1.5rem)",
+    boxSizing: "border-box",
+    gap: "clamp(10px, 2vh, 16px)",
   },
-stage: {
-  position: "relative",
-  width: "min(90vw, 480px)",
-  aspectRatio: "800 / 1200", // ← ersetz mit DEINEN echten Bildmaßen
-  marginBottom: "1.5rem",
-},
+  // Container hat EXAKT das Seitenverhältnis von concierge.png (1380 x 752).
+  // Dadurch wird das Bild nie zugeschnitten, und jede %-Position darin
+  // (Mund, Sprechblase) bleibt auf jedem Gerät identisch.
+  imageStage: {
+    position: "relative",
+    width: "min(94vw, 900px)",
+    aspectRatio: "1380 / 752",
+    borderRadius: 16,
+    overflow: "hidden",
+    boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+  },
+  characterImg: {
+    position: "absolute",
+    inset: 0,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
+  },
   vignette: {
     position: "absolute",
     inset: 0,
     background:
-      "linear-gradient(to bottom, rgba(10,8,20,0.5) 0%, rgba(10,8,20,0.05) 35%, rgba(10,8,20,0.7) 100%)",
+      "linear-gradient(to bottom, rgba(10,8,20,0.25) 0%, rgba(10,8,20,0) 30%, rgba(10,8,20,0.55) 100%)",
     zIndex: 1,
     pointerEvents: "none",
   },
-  character: {
+  // Mund liegt bei x=51.3%, y=22.1% im Originalbild (ausgemessen).
+  // Blase wird knapp rechts vom Mund verankert, wächst nach oben-rechts weg.
+  assistantBubbleWrap: {
     position: "absolute",
-    bottom: 0,
-    left: "50%",
-    transform: "translateX(-50%)",
-    height: "72vh",
-    maxHeight: 620,
-    width: "auto",
-    objectFit: "contain",
-    filter: "drop-shadow(0 25px 18px rgba(0,0,0,0.55))",
-    zIndex: 2,
-    pointerEvents: "none",
+    left: "54%",
+    top: "20%",
+    width: "clamp(90px, 34%, 220px)",
+    zIndex: 3,
+    transform: "translateY(-100%)",
   },
-assistantBubbleWrap: {
-  position: "absolute",
-  top: "22vh",
-  left: "58%",
-  width: "min(300px, 66vw)",
-  zIndex: 3,
-  transform: "translateY(-100%)",
-},
-assistantBubble: {
-  background: "rgba(255,255,255,0.98)",
-  color: "#26215C",
-  padding: "16px 20px",
-  borderRadius: 24,
-  fontSize: 14.5,
-  lineHeight: 1.5,
-  boxShadow: "0 16px 44px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.15)",
-  border: "1px solid rgba(255,255,255,0.6)",
-  maxHeight: "32vh",
-  overflowY: "auto",
-},
-assistantTail: {
-  position: "absolute",
-  bottom: -16,
-  left: 22,
-  display: "block",
-  filter: "drop-shadow(0 3px 3px rgba(0,0,0,0.2))",
-},
-  userBubbleWrap: { position: "absolute", top: "58%", left: "5%", maxWidth: 240, zIndex: 3 },
-  userBubble: {
-    background: "#3C3489",
-    color: "#EEEDFE",
-    padding: "12px 16px",
-    borderRadius: 18,
-    fontSize: 14,
+  assistantBubble: {
+    background: "rgba(255,255,255,0.98)",
+    color: "#26215C",
+    padding: "clamp(6px, 1.6vw, 12px) clamp(8px, 2vw, 14px)",
+    borderRadius: 14,
+    fontSize: "clamp(8px, 1.4vw, 12px)",
     lineHeight: 1.4,
-    boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+    boxShadow: "0 10px 24px rgba(0,0,0,0.35)",
+    maxHeight: "22vh",
+    overflowY: "auto",
   },
-  userTail: {
+  assistantTail: {
     position: "absolute",
-    bottom: -8,
-    right: 24,
-    width: 0,
-    height: 0,
-    borderLeft: "10px solid transparent",
-    borderRight: "10px solid transparent",
-    borderTop: "10px solid #3C3489",
+    bottom: "-1.4vw",
+    left: "1vw",
+    width: "clamp(10px, 2.4vw, 18px)",
+    height: "clamp(8px, 1.8vw, 14px)",
+    display: "block",
+    minWidth: 10,
+    minHeight: 8,
   },
   dot: {
     display: "inline-block",
@@ -235,10 +218,10 @@ assistantTail: {
     zIndex: 3,
     display: "flex",
     flexWrap: "wrap",
-    gap: 8,
+    gap: "clamp(6px, 1.2vw, 8px)",
     justifyContent: "center",
-    maxWidth: "90%",
-    marginBottom: 16,
+    maxWidth: "min(94vw, 700px)",
+    marginBottom: "clamp(10px, 2vh, 16px)",
   },
   exampleBtn: {
     background: "rgba(255,255,255,0.15)",
@@ -246,39 +229,42 @@ assistantTail: {
     color: "white",
     border: "1px solid rgba(255,255,255,0.3)",
     borderRadius: 20,
-    padding: "6px 14px",
-    fontSize: 13,
+    padding: "clamp(5px, 1vh, 7px) clamp(10px, 2vw, 14px)",
+    fontSize: "clamp(11px, 1.4vw, 13px)",
     cursor: "pointer",
+    whiteSpace: "nowrap",
   },
   inputBar: {
     position: "relative",
     zIndex: 4,
-    width: "min(600px, 92vw)",
+    width: "min(600px, 94vw)",
     display: "flex",
     alignItems: "center",
-    gap: 8,
+    gap: "clamp(6px, 1.5vw, 8px)",
     background: "rgba(255,255,255,0.14)",
     backdropFilter: "blur(14px)",
     border: "1px solid rgba(255,255,255,0.3)",
     borderRadius: 30,
-    padding: "8px 8px 8px 20px",
+    padding: "clamp(6px, 1.2vw, 8px) clamp(6px, 1.2vw, 8px) clamp(6px, 1.2vw, 8px) clamp(14px, 3vw, 20px)",
+    boxSizing: "border-box",
   },
   input: {
     flex: 1,
+    minWidth: 0,
     background: "transparent",
     border: "none",
     outline: "none",
     color: "white",
-    fontSize: 15,
+    fontSize: "clamp(14px, 1.8vw, 15px)",
   },
   roundBtn: {
-    width: 40,
-    height: 40,
+    width: "clamp(34px, 8vw, 40px)",
+    height: "clamp(34px, 8vw, 40px)",
     borderRadius: "50%",
     border: "none",
     background: "rgba(255,255,255,0.25)",
     color: "white",
-    fontSize: 16,
+    fontSize: "clamp(14px, 2vw, 16px)",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
