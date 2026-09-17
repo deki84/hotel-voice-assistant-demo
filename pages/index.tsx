@@ -1,4 +1,5 @@
-import { useState, useRef, SyntheticEvent } from "react";
+import { useState, useRef, SyntheticEvent, useEffect } from "react";
+
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -19,6 +20,14 @@ export default function Home() {
   const recognitionRef = useRef<MinimalSpeechRecognition | null>(null);
 
   const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+  const [showBubble, setShowBubble] = useState(false);
+
+useEffect(() => {
+  if (!lastAssistant) return;
+ 
+  const timer = setTimeout(() => setShowBubble(false), 5000);
+  return () => clearTimeout(timer);
+}, [lastAssistant]);
 
   async function sendMessage(text: string) {
     if (!text.trim() || loading) return;
@@ -34,12 +43,16 @@ export default function Home() {
       const data = await res.json();
       const replyText = res.ok ? data.reply : `Fehler: ${data.error}`;
       setMessages((prev) => [...prev, { role: "assistant", content: replyText }]);
+      setShowBubble(true);
     } catch {
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: "Netzwerkfehler - lief der Server?" },
       ]);
-    } finally {
+       setShowBubble(true);
+    } 
+    
+    finally {
       setLoading(false);
     }
   }
@@ -84,7 +97,7 @@ export default function Home() {
       </div>
     )}
 
-    {lastAssistant && !loading && (
+    {lastAssistant && !loading  && showBubble && (
       <div style={styles.assistantBubbleWrap}>
         <div style={styles.assistantBubble}>{lastAssistant.content}</div>
       </div>
@@ -122,9 +135,6 @@ export default function Home() {
      <style jsx global>{`
   input::placeholder { color: rgba(255,255,255,0.6); }
   @keyframes pulse { 0%, 80%, 100% { opacity: 0.3; } 40% { opacity: 1; } }
-
-
-  }
 `}</style>
     </main>
   );
