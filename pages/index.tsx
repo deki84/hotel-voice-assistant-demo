@@ -135,6 +135,7 @@ useEffect(() => {
      <style jsx global>{`
   input::placeholder { color: rgba(255,255,255,0.6); }
   @keyframes pulse { 0%, 80%, 100% { opacity: 0.3; } 40% { opacity: 1; } }
+  
 `}</style>
     </main>
   );
