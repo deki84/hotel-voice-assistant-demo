@@ -78,6 +78,26 @@ pnpm run dev
 
 Dann `http://localhost:3000` öffnen.
 
+## Authentifizierung
+
+Die Demo läuft öffentlich auf Vercel; ohne Zugriffsschutz könnte jeder
+Besucher das API-Kontingent verbrauchen. Zugriff läuft über Clerk
+(E-Mail/Passwort, Google, GitHub); zusätzlich gibt es einen Gast-Modus
+(lokal per `localStorage`), der schnelles Ausprobieren ohne Account
+erlaubt.
+
+## Setup
+
+```bash
+pnpm install
+cp .env.example .env.local
+# echten Groq API Key eintragen - kostenlos auf https://console.groq.com
+# Clerk-Keys eintragen - kostenlos auf https://clerk.com
+pnpm run dev
+```
+
+Dann `http://localhost:3000` öffnen.
+
 ## Beispiel-Interaktionen
 
 | Eingabe | Was passiert |
