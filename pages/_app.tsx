@@ -1,16 +1,24 @@
 import type { AppProps } from "next/app";
-import { useState } from "react";
+import {useEffect, useState } from "react";
 import { ClerkProvider, useUser, useClerk, SignInButton } from "@clerk/nextjs";
+import { deDE } from "@clerk/localizations";
 import "@/styles/globals.css";
 
 function AppContent({ Component, pageProps }: AppProps) {
   const { isSignedIn } = useUser();
   const { signOut } = useClerk();
 
-  const [guestMode, setGuestMode] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("guestMode") === "true";
-  });
+const [guestMode, setGuestMode] = useState(false);
+const [mounted, setMounted] = useState(false);
+
+
+useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  setMounted(true);
+  if (localStorage.getItem("guestMode") === "true") {
+    setGuestMode(true);
+  }
+}, []);
 
   function startGuestMode() {
     localStorage.setItem("guestMode", "true");
@@ -27,7 +35,8 @@ function AppContent({ Component, pageProps }: AppProps) {
     }
   }
 
-  const hasAccess = isSignedIn || guestMode;
+   const hasAccess = mounted && (isSignedIn || guestMode);
+;
 
   if (!hasAccess) {
     return (
@@ -84,7 +93,7 @@ export default function App(props: AppProps) {
   return (
  
     <ClerkProvider
-  localization={{ formButtonPrimary: "Login" }}
+  localization={{ ...deDE, formButtonPrimary: "Login" }}
   appearance={{
     variables: {
       colorModalBackdrop: "rgba(10,8,20,0.35)",
